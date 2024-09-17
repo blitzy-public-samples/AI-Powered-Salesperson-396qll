@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install frontend dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: Install backend dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+
+    - name: Run frontend linting and type checking
+      run: |
+        cd frontend
+        npm run lint
+        npm run type-check
+
+    - name: Run frontend tests
+      run: |
+        cd frontend
+        npm test
+
+    - name: Run backend tests
+      run: |
+        cd backend
+        python -m pytest
+
+    - name: Build frontend
+      run: |
+        cd frontend
+        npm run build
+
+    - name: Build backend
+      run: |
+        cd backend
+        # Add backend build steps if necessary
+
+    # HUMAN ASSISTANCE NEEDED
+    # The following step requires configuration for your specific staging environment.
+    # Please replace with the appropriate deployment commands for your setup.
+    - name: Deploy to staging
+      run: |
+        # Add deployment steps here
+        echo "Deploying to staging environment"
