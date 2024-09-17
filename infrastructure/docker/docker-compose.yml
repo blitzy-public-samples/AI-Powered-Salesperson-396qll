@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://backend:5000
+    depends_on:
+      - backend
+    networks:
+      - ai-salesperson-network
+
+  backend:
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/ai_salesperson
+      - JWT_SECRET=your_jwt_secret_here
+      - OPENAI_API_KEY=your_openai_api_key_here
+    depends_on:
+      - db
+    networks:
+      - ai-salesperson-network
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=ai_salesperson
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ai-salesperson-network
+
+networks:
+  ai-salesperson-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+
+# HUMAN ASSISTANCE NEEDED
+# Please review and update the following:
+# 1. Ensure that the frontend and backend Dockerfile paths are correct
+# 2. Update the REACT_APP_API_URL if needed based on your deployment setup
+# 3. Replace 'your_jwt_secret_here' with a strong, unique JWT secret
+# 4. Replace 'your_openai_api_key_here' with your actual OpenAI API key
+# 5. Review and adjust the PostgreSQL credentials as needed
